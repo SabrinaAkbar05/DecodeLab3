@@ -1,0 +1,998 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FlowSpace — Interior Design Studio</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ===== CSS VARIABLES ===== */
+    :root {
+      --cream:    #f5f0e8;
+      --bone:     #ede7d9;
+      --sand:     #c9b99a;
+      --clay:     #8b6f52;
+      --bark:     #3d2b1f;
+      --sage:     #7a8c6e;
+      --mist:     #b8c4b0;
+      --white:    #ffffff;
+      --charcoal: #2a2421;
+
+      --nav-h: 70px;
+      --max-w: 1200px;
+      --gap:   clamp(1rem, 4vw, 2.5rem);
+      --radius: 16px;
+    }
+
+    /* ===== RESET ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      font-weight: 300;
+      background: var(--cream);
+      color: var(--charcoal);
+      overflow-x: hidden;
+    }
+    img { display: block; max-width: 100%; }
+    a  { text-decoration: none; color: inherit; }
+
+    /* ===== TYPOGRAPHY (fluid with clamp) ===== */
+    h1 { font-family: 'Playfair Display', serif; font-size: clamp(2.4rem, 7vw, 5.5rem); line-height: 1.05; font-weight: 900; }
+    h2 { font-family: 'Playfair Display', serif; font-size: clamp(1.8rem, 4vw, 3rem);   line-height: 1.1;  font-weight: 700; }
+    h3 { font-family: 'Playfair Display', serif; font-size: clamp(1.2rem, 2.5vw, 1.6rem); font-weight: 400; }
+    p  { font-size: clamp(0.95rem, 2vw, 1.05rem); line-height: 1.75; }
+
+    /* ===== NAVBAR ===== */
+    header {
+      position: fixed; top: 0; left: 0; width: 100%;
+      height: var(--nav-h);
+      background: rgba(245, 240, 232, 0.88);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--bone);
+      z-index: 1000;
+      display: flex; align-items: center;
+      padding: 0 var(--gap);
+    }
+    .nav-inner {
+      max-width: var(--max-w);
+      width: 100%;
+      margin: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .logo {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: var(--bark);
+      letter-spacing: -0.02em;
+    }
+    .logo span { color: var(--sage); }
+
+    /* Desktop nav links */
+    .nav-links {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+      align-items: center;
+    }
+    .nav-links a {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--bark);
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--clay); }
+    .nav-cta {
+      background: var(--bark);
+      color: var(--cream) !important;
+      padding: 0.55rem 1.4rem;
+      border-radius: 100px;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--clay) !important; }
+
+    /* Hamburger button — visible only on mobile */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      gap: 5px;
+      cursor: pointer;
+      background: none;
+      border: none;
+      padding: 8px;
+      min-width: 44px; min-height: 44px;
+      align-items: center; justify-content: center;
+    }
+    .hamburger span {
+      display: block;
+      width: 24px; height: 2px;
+      background: var(--bark);
+      border-radius: 2px;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    /* Mobile nav popover */
+    #mobile-menu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: var(--cream);
+      z-index: 999;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 2.5rem;
+      animation: fadeIn 0.25s ease;
+    }
+    #mobile-menu.open { display: flex; }
+    #mobile-menu a {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 8vw, 2.8rem);
+      font-weight: 700;
+      color: var(--bark);
+      letter-spacing: -0.02em;
+      transition: color 0.2s;
+    }
+    #mobile-menu a:hover { color: var(--clay); }
+    .close-btn {
+      position: absolute; top: 1.2rem; right: 1.2rem;
+      background: none; border: none; cursor: pointer;
+      font-size: 2rem; color: var(--bark);
+      min-width: 44px; min-height: 44px;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: none; } }
+
+    /* ===== HERO ===== */
+    #hero {
+      min-height: 100svh;
+      padding-top: var(--nav-h);
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      align-items: center;
+      gap: var(--gap);
+      max-width: var(--max-w);
+      margin: auto;
+      padding-left: var(--gap);
+      padding-right: var(--gap);
+    }
+    .hero-text { padding: clamp(2rem, 6vw, 5rem) 0; }
+    .hero-eyebrow {
+      display: inline-block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--sage);
+      margin-bottom: 1.2rem;
+      border-left: 3px solid var(--sage);
+      padding-left: 0.75rem;
+    }
+    .hero-text h1 { color: var(--bark); margin-bottom: 1.4rem; }
+    .hero-text p  { color: var(--clay); max-width: 45ch; margin-bottom: 2.4rem; }
+    .btn-group { display: flex; gap: 1rem; flex-wrap: wrap; }
+    .btn-primary {
+      background: var(--bark);
+      color: var(--cream);
+      padding: 0.9rem 2rem;
+      border-radius: 100px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      transition: background 0.2s, transform 0.15s;
+      min-height: 44px;
+    }
+    .btn-primary:hover { background: var(--clay); transform: translateY(-2px); }
+    .btn-secondary {
+      border: 1.5px solid var(--sand);
+      color: var(--bark);
+      padding: 0.9rem 2rem;
+      border-radius: 100px;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.04em;
+      transition: border-color 0.2s, transform 0.15s;
+      min-height: 44px;
+    }
+    .btn-secondary:hover { border-color: var(--clay); transform: translateY(-2px); }
+
+    /* Hero image collage */
+    .hero-visual {
+      position: relative;
+      height: clamp(360px, 55vw, 600px);
+    }
+    .hero-img-main {
+      position: absolute;
+      right: 0; top: 10%;
+      width: 75%; height: 80%;
+      border-radius: 24px 24px 80px 24px;
+      object-fit: cover;
+      box-shadow: 0 30px 80px rgba(61,43,31,0.18);
+    }
+    .hero-img-accent {
+      position: absolute;
+      left: 0; bottom: 8%;
+      width: 48%; height: 52%;
+      border-radius: 24px 80px 24px 24px;
+      object-fit: cover;
+      box-shadow: 0 20px 50px rgba(61,43,31,0.14);
+      border: 5px solid var(--cream);
+    }
+    .hero-badge {
+      position: absolute;
+      bottom: 30%; right: -10px;
+      background: var(--sage);
+      color: var(--white);
+      border-radius: 50%;
+      width: clamp(80px, 12vw, 110px);
+      height: clamp(80px, 12vw, 110px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center;
+      font-size: clamp(0.55rem, 1.2vw, 0.7rem);
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      line-height: 1.4;
+      box-shadow: 0 8px 24px rgba(122,140,110,0.3);
+    }
+    .hero-badge strong { font-size: clamp(1rem, 2.5vw, 1.4rem); display: block; letter-spacing: -0.02em; }
+
+    /* ===== SECTION SHARED ===== */
+    section { padding: clamp(4rem, 10vw, 8rem) var(--gap); }
+    .container { max-width: var(--max-w); margin: auto; }
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.18em;
+      color: var(--sage);
+      margin-bottom: 0.8rem;
+    }
+    .divider {
+      width: 48px; height: 2px;
+      background: var(--sand);
+      margin: 1.5rem 0 2.5rem;
+    }
+
+    /* ===== ABOUT ===== */
+    #about { background: var(--bone); }
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 6vw, 5rem);
+      align-items: center;
+    }
+    .about-img-wrap {
+      position: relative;
+    }
+    .about-img-main {
+      width: 100%;
+      aspect-ratio: 4/5;
+      object-fit: cover;
+      border-radius: 8px 80px 8px 8px;
+      box-shadow: 0 24px 60px rgba(61,43,31,0.12);
+    }
+    .about-stat-pill {
+      position: absolute;
+      top: -1.5rem; right: -1.5rem;
+      background: var(--bark);
+      color: var(--cream);
+      border-radius: 16px;
+      padding: 1.2rem 1.5rem;
+      text-align: center;
+    }
+    .about-stat-pill strong {
+      display: block;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.8rem, 4vw, 2.4rem);
+      font-weight: 900;
+    }
+    .about-stat-pill span { font-size: 0.75rem; opacity: 0.8; }
+    .about-text h2 { color: var(--bark); margin-bottom: 1rem; }
+    .about-text p  { color: var(--clay); margin-bottom: 1.2rem; }
+    .feature-list { list-style: none; display: flex; flex-direction: column; gap: 0.8rem; margin-top: 1.5rem; }
+    .feature-list li {
+      display: flex; align-items: flex-start; gap: 0.75rem;
+      font-size: 0.95rem; color: var(--bark);
+    }
+    .feature-list li::before {
+      content: '✦';
+      color: var(--sage);
+      font-size: 0.8rem;
+      margin-top: 0.15rem;
+      flex-shrink: 0;
+    }
+
+    /* ===== SERVICES ===== */
+    #services { background: var(--cream); }
+    .services-header { text-align: center; margin-bottom: clamp(2.5rem, 6vw, 4.5rem); }
+    .services-header h2 { color: var(--bark); }
+    .services-header .divider { margin: 1.5rem auto 2rem; }
+    .services-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 1.5rem;
+    }
+    .card {
+      background: var(--bone);
+      border-radius: var(--radius);
+      padding: clamp(1.5rem, 4vw, 2.5rem);
+      transition: transform 0.25s, box-shadow 0.25s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 4px;
+      background: linear-gradient(90deg, var(--sage), var(--sand));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.3s;
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 24px 60px rgba(61,43,31,0.1); }
+    .card:hover::before { transform: scaleX(1); }
+    .card-icon {
+      font-size: 2rem; margin-bottom: 1.2rem;
+      width: 56px; height: 56px;
+      background: var(--cream);
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .card h3 { color: var(--bark); margin-bottom: 0.8rem; }
+    .card p  { color: var(--clay); font-size: 0.92rem; }
+
+    /* ===== PORTFOLIO ===== */
+    #portfolio { background: var(--bark); }
+    #portfolio .section-label { color: var(--mist); }
+    #portfolio h2 { color: var(--cream); }
+    .portfolio-intro { display: flex; align-items: flex-end; justify-content: space-between; gap: 1.5rem; margin-bottom: 3rem; flex-wrap: wrap; }
+    .portfolio-intro h2 { max-width: 18ch; }
+    .portfolio-intro p { color: var(--mist); max-width: 35ch; font-size: 0.95rem; }
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      grid-template-rows: auto;
+      gap: 1.2rem;
+    }
+    .pf-item {
+      position: relative;
+      overflow: hidden;
+      border-radius: var(--radius);
+      background: var(--clay);
+      min-height: 240px;
+    }
+    .pf-item:nth-child(1) { grid-column: 1 / 8; grid-row: 1; }
+    .pf-item:nth-child(2) { grid-column: 8 / 13; grid-row: 1; }
+    .pf-item:nth-child(3) { grid-column: 1 / 5; grid-row: 2; }
+    .pf-item:nth-child(4) { grid-column: 5 / 13; grid-row: 2; }
+    .pf-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      min-height: 240px;
+      transition: transform 0.5s ease;
+    }
+    .pf-item:hover .pf-img { transform: scale(1.06); }
+    .pf-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(61,43,31,0.85) 0%, transparent 55%);
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 1.5rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .pf-item:hover .pf-overlay { opacity: 1; }
+    .pf-overlay h3 { color: var(--cream); font-family: 'Playfair Display', serif; font-size: 1.2rem; }
+    .pf-overlay span { color: var(--mist); font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.1em; }
+    .pf-tag {
+      position: absolute; top: 1rem; left: 1rem;
+      background: rgba(245,240,232,0.15);
+      backdrop-filter: blur(8px);
+      color: var(--cream);
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      padding: 0.3rem 0.8rem;
+      border-radius: 100px;
+    }
+
+    /* Color swatches as image placeholders */
+    .pf-swatch-1 { background: linear-gradient(135deg, #c9b99a 0%, #8b6f52 100%); }
+    .pf-swatch-2 { background: linear-gradient(135deg, #7a8c6e 0%, #b8c4b0 100%); }
+    .pf-swatch-3 { background: linear-gradient(135deg, #3d2b1f 0%, #8b6f52 100%); }
+    .pf-swatch-4 { background: linear-gradient(135deg, #b8c4b0 0%, #7a8c6e 100%); }
+    .pf-inner-content {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1rem, 3vw, 1.8rem);
+      font-style: italic;
+      color: rgba(255,255,255,0.5);
+      text-align: center; padding: 1rem;
+    }
+
+    /* ===== TESTIMONIALS ===== */
+    #testimonials { background: var(--bone); }
+    .test-header { text-align: center; margin-bottom: clamp(2.5rem, 6vw, 4rem); }
+    .test-header h2 { color: var(--bark); }
+    .test-header .divider { margin: 1.5rem auto; }
+    .test-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5rem;
+    }
+    .test-card {
+      background: var(--cream);
+      border-radius: var(--radius);
+      padding: clamp(1.5rem, 4vw, 2.2rem);
+      position: relative;
+    }
+    .test-card::before {
+      content: '"';
+      position: absolute;
+      top: 1rem; right: 1.5rem;
+      font-family: 'Playfair Display', serif;
+      font-size: 5rem;
+      color: var(--bone);
+      line-height: 1;
+    }
+    .test-card p { color: var(--clay); font-size: 0.95rem; line-height: 1.7; margin-bottom: 1.5rem; font-style: italic; }
+    .test-author { display: flex; align-items: center; gap: 0.75rem; }
+    .test-avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      background: var(--sand);
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Playfair Display', serif;
+      font-weight: 700;
+      color: var(--bark);
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .test-author-info strong { display: block; color: var(--bark); font-size: 0.9rem; }
+    .test-author-info span  { color: var(--sand); font-size: 0.78rem; }
+    .stars { color: var(--clay); font-size: 0.9rem; margin-bottom: 1rem; letter-spacing: 0.1em; }
+
+    /* ===== CONTACT ===== */
+    #contact { background: var(--cream); }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: clamp(2rem, 6vw, 5rem);
+      align-items: start;
+    }
+    .contact-info h2 { color: var(--bark); margin-bottom: 1rem; }
+    .contact-info p  { color: var(--clay); margin-bottom: 2rem; }
+    .contact-details { display: flex; flex-direction: column; gap: 1.2rem; }
+    .contact-item {
+      display: flex; align-items: center; gap: 1rem;
+      color: var(--bark); font-size: 0.95rem;
+    }
+    .contact-item .icon {
+      width: 44px; height: 44px;
+      background: var(--bone);
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    .contact-form {
+      display: flex; flex-direction: column; gap: 1rem;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .field {
+      display: flex; flex-direction: column; gap: 0.4rem;
+    }
+    .field label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--clay);
+    }
+    .field input,
+    .field textarea,
+    .field select {
+      background: var(--bone);
+      border: 1.5px solid transparent;
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      color: var(--bark);
+      transition: border-color 0.2s;
+      width: 100%;
+      min-height: 44px;
+    }
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      outline: none;
+      border-color: var(--sage);
+    }
+    .field textarea { resize: vertical; min-height: 120px; }
+    .submit-btn {
+      background: var(--bark);
+      color: var(--cream);
+      border: none;
+      border-radius: 100px;
+      padding: 1rem 2.4rem;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 500;
+      cursor: pointer;
+      letter-spacing: 0.04em;
+      align-self: flex-start;
+      transition: background 0.2s, transform 0.15s;
+      min-height: 44px;
+    }
+    .submit-btn:hover { background: var(--clay); transform: translateY(-2px); }
+
+    /* ===== FOOTER ===== */
+    footer {
+      background: var(--charcoal);
+      color: var(--mist);
+      padding: clamp(2.5rem, 6vw, 4rem) var(--gap);
+    }
+    .footer-inner {
+      max-width: var(--max-w); margin: auto;
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: clamp(1.5rem, 4vw, 3rem);
+    }
+    .footer-brand .logo { color: var(--cream); margin-bottom: 1rem; }
+    .footer-brand p { font-size: 0.88rem; line-height: 1.7; max-width: 28ch; color: var(--mist); }
+    .footer-col h4 {
+      font-size: 0.75rem; font-weight: 500;
+      text-transform: uppercase; letter-spacing: 0.15em;
+      color: var(--sand); margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 0.6rem; }
+    .footer-col ul a { font-size: 0.88rem; color: var(--mist); transition: color 0.2s; }
+    .footer-col ul a:hover { color: var(--cream); }
+    .footer-bottom {
+      max-width: var(--max-w); margin: 2.5rem auto 0;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255,255,255,0.08);
+      display: flex; justify-content: space-between; align-items: center;
+      flex-wrap: wrap; gap: 0.5rem;
+      font-size: 0.8rem; color: rgba(184,196,176,0.6);
+    }
+
+    /* ===== SCROLL REVEAL ===== */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+    .reveal.visible { opacity: 1; transform: none; }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* ===== HERO LOAD ANIMATION ===== */
+    .hero-text .hero-eyebrow { animation: slideUp 0.7s 0.1s both; }
+    .hero-text h1   { animation: slideUp 0.7s 0.25s both; }
+    .hero-text p    { animation: slideUp 0.7s 0.4s both; }
+    .btn-group      { animation: slideUp 0.7s 0.55s both; }
+    .hero-visual    { animation: slideUp 0.8s 0.3s both; }
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: none; }
+    }
+
+    /* ===== MEDIA QUERIES ===== */
+
+    /* Tablet: ≤ 900px */
+    @media (max-width: 900px) {
+      #hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding-top: calc(var(--nav-h) + 2rem);
+        padding-bottom: 3rem;
+      }
+      .hero-text p { margin-left: auto; margin-right: auto; }
+      .btn-group { justify-content: center; }
+      .hero-visual { height: clamp(280px, 60vw, 400px); }
+      .hero-badge { right: 4px; }
+
+      .about-grid { grid-template-columns: 1fr; }
+      .about-img-wrap { max-width: 420px; margin: auto; }
+      .about-stat-pill { top: -1rem; right: -0.5rem; }
+
+      .portfolio-grid {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: auto;
+      }
+      .pf-item:nth-child(1) { grid-column: 1 / 2; grid-row: 1; }
+      .pf-item:nth-child(2) { grid-column: 2 / 3; grid-row: 1; }
+      .pf-item:nth-child(3) { grid-column: 1 / 2; grid-row: 2; }
+      .pf-item:nth-child(4) { grid-column: 2 / 3; grid-row: 2; }
+
+      .contact-grid { grid-template-columns: 1fr; }
+
+      .footer-inner { grid-template-columns: 1fr 1fr; }
+
+      .nav-links { display: none; }
+      .hamburger { display: flex; }
+    }
+
+    /* Mobile: ≤ 560px */
+    @media (max-width: 560px) {
+      #hero { text-align: left; }
+      .btn-group { justify-content: flex-start; }
+      .hero-text p { margin-left: 0; }
+
+      .portfolio-grid {
+        grid-template-columns: 1fr;
+      }
+      .pf-item { grid-column: 1 / 2 !important; grid-row: auto !important; }
+      .pf-overlay { opacity: 1; }
+
+      .field-row { grid-template-columns: 1fr; }
+
+      .footer-inner { grid-template-columns: 1fr; }
+      .footer-bottom { flex-direction: column; text-align: center; }
+
+      .portfolio-intro { flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===== NAVBAR ===== -->
+  <header>
+    <div class="nav-inner">
+      <a href="#" class="logo">Flow<span>Space</span></a>
+      <nav aria-label="Main navigation">
+        <ul class="nav-links">
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#portfolio">Work</a></li>
+          <li><a href="#testimonials">Reviews</a></li>
+          <li><a href="#contact" class="nav-cta">Get in touch</a></li>
+        </ul>
+      </nav>
+      <button class="hamburger" aria-label="Open menu" onclick="openMenu()">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===== MOBILE MENU (Popover-style) ===== -->
+  <div id="mobile-menu" role="dialog" aria-modal="true" aria-label="Navigation menu">
+    <button class="close-btn" aria-label="Close menu" onclick="closeMenu()">✕</button>
+    <a href="#about"        onclick="closeMenu()">About</a>
+    <a href="#services"     onclick="closeMenu()">Services</a>
+    <a href="#portfolio"    onclick="closeMenu()">Work</a>
+    <a href="#testimonials" onclick="closeMenu()">Reviews</a>
+    <a href="#contact"      onclick="closeMenu()">Contact</a>
+  </div>
+
+  <!-- ===== HERO ===== -->
+  <section id="hero" aria-label="Hero">
+    <div class="hero-text">
+      <span class="hero-eyebrow">Interior Design Studio</span>
+      <h1>Where Space Becomes Story</h1>
+      <p>We craft living environments that breathe — blending organic materiality with precise spatial thinking for spaces that feel timeless from day one.</p>
+      <div class="btn-group">
+        <a href="#portfolio" class="btn-primary">View Our Work</a>
+        <a href="#contact"   class="btn-secondary">Start a Project</a>
+      </div>
+    </div>
+    <div class="hero-visual" aria-hidden="true">
+      <div class="hero-img-main pf-swatch-1" style="position:absolute;right:0;top:10%;width:75%;height:80%;border-radius:24px 24px 80px 24px;box-shadow:0 30px 80px rgba(61,43,31,0.18);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:clamp(1rem,2.5vw,1.6rem);font-style:italic;color:rgba(255,255,255,0.5);">Living Room</div>
+      <div class="hero-img-accent pf-swatch-3" style="position:absolute;left:0;bottom:8%;width:48%;height:52%;border-radius:24px 80px 24px 24px;box-shadow:0 20px 50px rgba(61,43,31,0.14);border:5px solid var(--cream);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:clamp(0.8rem,2vw,1.1rem);font-style:italic;color:rgba(255,255,255,0.4);">Kitchen</div>
+      <div class="hero-badge">
+        <strong>12+</strong>Years<br/>of craft
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== ABOUT ===== -->
+  <section id="about">
+    <div class="container">
+      <div class="about-grid">
+        <div class="about-img-wrap reveal">
+          <div class="about-img-main pf-swatch-2" style="width:100%;aspect-ratio:4/5;border-radius:8px 80px 8px 8px;box-shadow:0 24px 60px rgba(61,43,31,0.12);display:flex;align-items:center;justify-content:center;font-family:'Playfair Display',serif;font-size:1.4rem;font-style:italic;color:rgba(255,255,255,0.4);">Our Studio</div>
+          <div class="about-stat-pill">
+            <strong>340+</strong>
+            <span>Projects<br/>Completed</span>
+          </div>
+        </div>
+        <div class="about-text">
+          <p class="section-label reveal">Our Philosophy</p>
+          <h2 class="reveal reveal-delay-1">Design that earns its permanence</h2>
+          <div class="divider reveal reveal-delay-1"></div>
+          <p class="reveal reveal-delay-2">FlowSpace was founded on a single belief: great interiors aren't decorated — they're engineered from the inside out, shaped by the people who inhabit them, the light that fills them, and the stories they're meant to hold.</p>
+          <p class="reveal reveal-delay-2">We work with a selective roster of clients each year, ensuring every project receives our full attention and creative investment.</p>
+          <ul class="feature-list reveal reveal-delay-3">
+            <li>Tailored concept development from brief to installation</li>
+            <li>Sourced sustainable materials with full provenance</li>
+            <li>In-house 3D visualisation and spatial planning</li>
+            <li>Dedicated project manager for every commission</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== SERVICES ===== -->
+  <section id="services">
+    <div class="container">
+      <div class="services-header">
+        <p class="section-label reveal">What We Offer</p>
+        <h2 class="reveal reveal-delay-1">Full-spectrum design services</h2>
+        <div class="divider reveal reveal-delay-1"></div>
+      </div>
+      <div class="services-grid">
+        <div class="card reveal">
+          <div class="card-icon">🏡</div>
+          <h3>Residential Design</h3>
+          <p>Complete home transformations — from single rooms to whole properties — guided by your lifestyle and aesthetic vision.</p>
+        </div>
+        <div class="card reveal reveal-delay-1">
+          <div class="card-icon">🏢</div>
+          <h3>Commercial Spaces</h3>
+          <p>Offices, hospitality venues and retail environments designed to perform beautifully under real-world use.</p>
+        </div>
+        <div class="card reveal reveal-delay-2">
+          <div class="card-icon">✏️</div>
+          <h3>Concept & Styling</h3>
+          <p>Mood boards, material palettes, and spatial narratives for clients who want direction without full management.</p>
+        </div>
+        <div class="card reveal reveal-delay-3">
+          <div class="card-icon">📐</div>
+          <h3>Space Planning</h3>
+          <p>Architectural-grade layout analysis optimising flow, function, and light for every room configuration.</p>
+        </div>
+        <div class="card reveal">
+          <div class="card-icon">🪑</div>
+          <h3>Furniture Curation</h3>
+          <p>Bespoke procurement from our network of global makers, combining investment pieces with accessible finds.</p>
+        </div>
+        <div class="card reveal reveal-delay-1">
+          <div class="card-icon">🎨</div>
+          <h3>3D Visualisation</h3>
+          <p>Photorealistic renders and virtual walkthroughs so you can see your space before a single item is ordered.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== PORTFOLIO ===== -->
+  <section id="portfolio">
+    <div class="container">
+      <div class="portfolio-intro">
+        <div>
+          <p class="section-label reveal">Selected Work</p>
+          <h2 class="reveal reveal-delay-1">Projects that speak<br/> for themselves</h2>
+        </div>
+        <p class="reveal reveal-delay-2">A curated selection from our studio across residential and commercial commissions.</p>
+      </div>
+      <div class="portfolio-grid">
+        <div class="pf-item pf-swatch-1 reveal">
+          <span class="pf-tag">Residential</span>
+          <div class="pf-inner-content">Kensington Townhouse</div>
+          <div class="pf-overlay"><h3>Kensington Townhouse</h3><span>London · 2024</span></div>
+        </div>
+        <div class="pf-item pf-swatch-2 reveal reveal-delay-1">
+          <span class="pf-tag">Commercial</span>
+          <div class="pf-inner-content">The Creston Hotel</div>
+          <div class="pf-overlay"><h3>The Creston Hotel</h3><span>Edinburgh · 2024</span></div>
+        </div>
+        <div class="pf-item pf-swatch-3 reveal reveal-delay-2">
+          <span class="pf-tag">Residential</span>
+          <div class="pf-inner-content">Lakeside Villa</div>
+          <div class="pf-overlay"><h3>Lakeside Villa</h3><span>Geneva · 2023</span></div>
+        </div>
+        <div class="pf-item pf-swatch-4 reveal reveal-delay-3">
+          <span class="pf-tag">Office</span>
+          <div class="pf-inner-content">Meridian HQ</div>
+          <div class="pf-overlay"><h3>Meridian HQ</h3><span>Amsterdam · 2023</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== TESTIMONIALS ===== -->
+  <section id="testimonials">
+    <div class="container">
+      <div class="test-header">
+        <p class="section-label reveal">Client Reviews</p>
+        <h2 class="reveal reveal-delay-1">What our clients say</h2>
+        <div class="divider reveal reveal-delay-1"></div>
+      </div>
+      <div class="test-grid">
+        <div class="test-card reveal">
+          <p class="stars">★★★★★</p>
+          <p>FlowSpace transformed our Victorian terrace into something we didn't dare dream was possible. Every detail felt considered, nothing felt forced.</p>
+          <div class="test-author">
+            <div class="test-avatar">SC</div>
+            <div class="test-author-info">
+              <strong>Sarah Chen</strong>
+              <span>Homeowner, London</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-card reveal reveal-delay-1">
+          <p class="stars">★★★★★</p>
+          <p>Our boutique hotel went from dated to magnetic. Bookings increased 40% in the first quarter after the redesign. The ROI has been extraordinary.</p>
+          <div class="test-author">
+            <div class="test-avatar">MP</div>
+            <div class="test-author-info">
+              <strong>Marcus Patel</strong>
+              <span>Hotel Director, Edinburgh</span>
+            </div>
+          </div>
+        </div>
+        <div class="test-card reveal reveal-delay-2">
+          <p class="stars">★★★★★</p>
+          <p>Working with the FlowSpace team felt effortless. They listened deeply, pushed back thoughtfully, and delivered beyond every expectation we had.</p>
+          <div class="test-author">
+            <div class="test-avatar">LV</div>
+            <div class="test-author-info">
+              <strong>Léa Vandermeer</strong>
+              <span>Homeowner, Geneva</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section id="contact">
+    <div class="container">
+      <div class="contact-grid">
+        <div class="contact-info">
+          <p class="section-label reveal">Get In Touch</p>
+          <h2 class="reveal reveal-delay-1">Let's build something<br/>worth living in</h2>
+          <div class="divider reveal reveal-delay-1"></div>
+          <p class="reveal reveal-delay-2">We take on a limited number of projects each year. If you have a space with potential, we'd love to hear about it.</p>
+          <div class="contact-details reveal reveal-delay-3">
+            <div class="contact-item">
+              <div class="icon">📍</div>
+              <span>14 Marlow Street, London W1K 4AB</span>
+            </div>
+            <div class="contact-item">
+              <div class="icon">✉️</div>
+              <span>hello@flowspace.design</span>
+            </div>
+            <div class="contact-item">
+              <div class="icon">📞</div>
+              <span>+44 20 7946 0312</span>
+            </div>
+          </div>
+        </div>
+        <div class="contact-form reveal reveal-delay-2">
+          <div class="field-row">
+            <div class="field">
+              <label for="fname">First Name</label>
+              <input type="text" id="fname" placeholder="Jane" />
+            </div>
+            <div class="field">
+              <label for="lname">Last Name</label>
+              <input type="text" id="lname" placeholder="Smith" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="jane@example.com" />
+          </div>
+          <div class="field">
+            <label for="service">Service Type</label>
+            <select id="service">
+              <option value="">Select a service…</option>
+              <option>Residential Design</option>
+              <option>Commercial Spaces</option>
+              <option>Concept & Styling</option>
+              <option>Space Planning</option>
+              <option>Furniture Curation</option>
+              <option>3D Visualisation</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="message">Tell Us About Your Space</label>
+            <textarea id="message" placeholder="A few lines about the project, location, and your vision…"></textarea>
+          </div>
+          <button class="submit-btn" type="button" onclick="handleSubmit(this)">Send Enquiry →</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <div class="logo">Flow<span>Space</span></div>
+        <p>Crafting interiors that earn their permanence — one considered space at a time.</p>
+      </div>
+      <div class="footer-col">
+        <h4>Studio</h4>
+        <ul>
+          <li><a href="#about">About</a></li>
+          <li><a href="#services">Services</a></li>
+          <li><a href="#portfolio">Portfolio</a></li>
+          <li><a href="#contact">Contact</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Residential</a></li>
+          <li><a href="#services">Commercial</a></li>
+          <li><a href="#services">Visualisation</a></li>
+          <li><a href="#services">Curation</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Connect</h4>
+        <ul>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">Pinterest</a></li>
+          <li><a href="#">Houzz</a></li>
+          <li><a href="#">LinkedIn</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2026 FlowSpace Design Studio. All rights reserved.</span>
+      <span>Privacy Policy · Terms of Service</span>
+    </div>
+  </footer>
+
+  <!-- ===== JAVASCRIPT ===== -->
+  <script>
+    /* --- Mobile menu --- */
+    function openMenu() {
+      document.getElementById('mobile-menu').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeMenu() {
+      document.getElementById('mobile-menu').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    /* Close on Escape key */
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeMenu(); });
+
+    /* --- Scroll reveal --- */
+    const revealEls = document.querySelectorAll('.reveal');
+    const observer = new IntersectionObserver(entries => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.12 });
+    revealEls.forEach(el => observer.observe(el));
+
+    /* --- Form submit feedback --- */
+    function handleSubmit(btn) {
+      btn.textContent = '✓ Sent — we\'ll be in touch!';
+      btn.style.background = 'var(--sage)';
+      btn.disabled = true;
+    }
+  </script>
+</body>
+</html>
