@@ -1,0 +1,1180 @@
+html
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Interactive Web Elements — DecodeLabs Project 3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet"/>
+  <style>
+    /* ══════════════════════════════════════════
+       CSS VARIABLES — Light & Dark Theme
+    ══════════════════════════════════════════ */
+    :root {
+      --bg:        #f2efe8;
+      --surface:   #ffffff;
+      --surface2:  #edeae2;
+      --border:    #d8d3c8;
+      --text:      #1a1814;
+      --muted:     #7a7468;
+      --accent:    #2d6a4f;
+      --accent-bg: rgba(45,106,79,.1);
+      --accent2:   #c97d20;
+      --danger:    #b5341e;
+      --danger-bg: rgba(181,52,30,.1);
+      --radius:    14px;
+      --shadow:    0 2px 16px rgba(0,0,0,.07);
+      --t: .28s cubic-bezier(.4,0,.2,1);
+    }
+    [data-theme="dark"] {
+      --bg:        #0e0d0b;
+      --surface:   #191714;
+      --surface2:  #242119;
+      --border:    #353028;
+      --text:      #ede9e0;
+      --muted:     #857e74;
+      --accent:    #52b788;
+      --accent-bg: rgba(82,183,136,.12);
+      --accent2:   #f0b429;
+      --danger:    #e05d44;
+      --danger-bg: rgba(224,93,68,.12);
+      --shadow:    0 2px 20px rgba(0,0,0,.4);
+    }
+
+    /* ══════════════════════════════════════════
+       BASE RESET
+    ══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      transition: background var(--t), color var(--t);
+      line-height: 1.65;
+    }
+
+    /* ══════════════════════════════════════════
+       HEADER / NAVBAR
+    ══════════════════════════════════════════ */
+    header {
+      position: sticky; top: 0; z-index: 200;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0 40px;
+      height: 66px;
+      display: flex; align-items: center; justify-content: space-between;
+      box-shadow: var(--shadow);
+      transition: background var(--t), border-color var(--t);
+    }
+    .logo {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.15rem; font-weight: 800;
+      letter-spacing: -.02em;
+      color: var(--accent);
+    }
+    .logo span { color: var(--text); font-weight: 400; }
+    nav { display: flex; gap: 32px; }
+    nav a {
+      font-size: .85rem; font-weight: 500;
+      color: var(--muted); text-decoration: none;
+      transition: color var(--t);
+    }
+    nav a:hover { color: var(--accent); }
+
+    /* Dark Mode Toggle */
+    .theme-btn {
+      display: flex; align-items: center; gap: 9px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 6px 14px 6px 8px;
+      cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .82rem; font-weight: 500;
+      color: var(--muted);
+      transition: border-color var(--t), color var(--t), background var(--t);
+    }
+    .theme-btn:hover { border-color: var(--accent); color: var(--accent); }
+    .theme-btn .icon {
+      width: 26px; height: 26px;
+      background: var(--accent-bg);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px;
+      transition: background var(--t);
+    }
+    #theme-label { transition: none; }
+
+    /* ══════════════════════════════════════════
+       MAIN LAYOUT
+    ══════════════════════════════════════════ */
+    main {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 56px 24px 100px;
+      display: flex; flex-direction: column; gap: 40px;
+    }
+
+    /* ══════════════════════════════════════════
+       HERO BANNER
+    ══════════════════════════════════════════ */
+    .hero {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 52px 48px;
+      position: relative; overflow: hidden;
+      transition: background var(--t), border-color var(--t);
+    }
+    .hero::after {
+      content: '';
+      position: absolute; bottom: -80px; right: -80px;
+      width: 260px; height: 260px; border-radius: 50%;
+      background: radial-gradient(circle, var(--accent-bg), transparent 70%);
+      pointer-events: none;
+    }
+    .badge {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: var(--accent-bg);
+      color: var(--accent);
+      border: 1px solid color-mix(in srgb, var(--accent) 25%, transparent);
+      font-size: .72rem; font-weight: 600;
+      letter-spacing: .09em; text-transform: uppercase;
+      padding: 4px 12px; border-radius: 100px;
+      margin-bottom: 20px;
+    }
+    .hero h1 {
+      font-family: 'Syne', sans-serif;
+      font-size: clamp(2rem, 4.5vw, 3rem);
+      font-weight: 800;
+      letter-spacing: -.03em;
+      line-height: 1.12;
+      margin-bottom: 16px;
+    }
+    .hero h1 em { font-style: normal; color: var(--accent); }
+    .hero p { color: var(--muted); max-width: 540px; font-size: .97rem; }
+    .hero-meta {
+      margin-top: 28px;
+      display: flex; gap: 24px; flex-wrap: wrap;
+    }
+    .meta-item {
+      font-size: .82rem; color: var(--muted);
+      display: flex; align-items: center; gap: 6px;
+    }
+    .meta-item strong { color: var(--text); font-weight: 600; }
+
+    /* ══════════════════════════════════════════
+       SECTION CARDS
+    ══════════════════════════════════════════ */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 36px;
+      transition: background var(--t), border-color var(--t);
+    }
+    .card-header {
+      display: flex; align-items: flex-start;
+      justify-content: space-between; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .card-title-group {}
+    .section-tag {
+      font-size: .7rem; font-weight: 700;
+      letter-spacing: .1em; text-transform: uppercase;
+      color: var(--accent); margin-bottom: 6px;
+    }
+    .card h2 {
+      font-family: 'Syne', sans-serif;
+      font-size: 1.35rem; font-weight: 700;
+      letter-spacing: -.02em;
+    }
+    .card-desc {
+      font-size: .88rem; color: var(--muted);
+      margin-top: 4px;
+    }
+    .divider {
+      height: 1px; background: var(--border);
+      margin: 0 0 28px;
+    }
+
+    /* ══════════════════════════════════════════
+       BUTTONS
+    ══════════════════════════════════════════ */
+    .btn {
+      display: inline-flex; align-items: center;
+      justify-content: center; gap: 7px;
+      padding: 10px 22px;
+      border-radius: 10px;
+      border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .88rem; font-weight: 500;
+      transition: all var(--t);
+      white-space: nowrap;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #fff;
+    }
+    .btn-primary:hover { opacity: .86; transform: translateY(-1px); }
+    .btn-outline {
+      background: transparent;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+    .btn-danger {
+      background: var(--danger-bg);
+      color: var(--danger);
+      border: 1.5px solid color-mix(in srgb, var(--danger) 25%, transparent);
+    }
+    .btn-danger:hover { background: var(--danger); color: #fff; }
+    .btn-icon {
+      width: 38px; height: 38px;
+      padding: 0; border-radius: 10px;
+      font-size: 1.1rem;
+    }
+
+    /* ══════════════════════════════════════════
+       1. DARK MODE TOGGLE (Full Demo)
+    ══════════════════════════════════════════ */
+    .theme-demo {
+      display: flex; align-items: center;
+      justify-content: space-between; gap: 20px;
+      flex-wrap: wrap;
+    }
+    .theme-demo-left { flex: 1; min-width: 220px; }
+    .theme-demo-left p { color: var(--muted); font-size: .9rem; }
+    .theme-status {
+      margin-top: 14px;
+      display: inline-flex; align-items: center; gap: 8px;
+      font-size: .84rem; font-weight: 500; color: var(--muted);
+    }
+    .status-dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: .5; transform: scale(.7); }
+    }
+    .big-toggle {
+      display: flex; align-items: center; gap: 14px;
+    }
+    .big-toggle-track {
+      width: 70px; height: 36px;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: 100px;
+      cursor: pointer;
+      position: relative;
+      transition: background var(--t), border-color var(--t);
+    }
+    [data-theme="dark"] .big-toggle-track {
+      background: var(--accent-bg);
+      border-color: var(--accent);
+    }
+    .big-toggle-thumb {
+      position: absolute;
+      top: 3px; left: 3px;
+      width: 26px; height: 26px;
+      background: var(--muted);
+      border-radius: 50%;
+      font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform var(--t), background var(--t);
+    }
+    [data-theme="dark"] .big-toggle-thumb {
+      transform: translateX(34px);
+      background: var(--accent);
+    }
+    .toggle-labels { display: flex; flex-direction: column; gap: 2px; }
+    .toggle-labels span { font-size: .78rem; color: var(--muted); }
+    .toggle-labels strong { font-size: .95rem; font-weight: 600; }
+
+    /* ══════════════════════════════════════════
+       2. COUNTER
+    ══════════════════════════════════════════ */
+    .counter-ui {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 28px;
+    }
+    .counter-display {
+      display: flex; flex-direction: column;
+      align-items: center; gap: 6px;
+    }
+    #counter-number {
+      font-family: 'Syne', sans-serif;
+      font-size: 5.5rem; font-weight: 800;
+      letter-spacing: -.05em;
+      color: var(--accent);
+      line-height: 1;
+      transition: transform .15s ease, color var(--t);
+    }
+    #counter-number.bump {
+      animation: bump .2s ease;
+    }
+    @keyframes bump {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.12); }
+      100% { transform: scale(1); }
+    }
+    #counter-number.negative { color: var(--danger); }
+    #counter-number.zero { color: var(--muted); }
+    .counter-label {
+      font-size: .8rem; color: var(--muted);
+      letter-spacing: .05em; text-transform: uppercase; font-weight: 600;
+    }
+    .counter-controls {
+      display: flex; align-items: center; gap: 12px;
+    }
+    .counter-controls .btn {
+      width: 48px; height: 48px; padding: 0;
+      font-size: 1.3rem; font-weight: 700; border-radius: 12px;
+    }
+    #btn-reset {
+      padding: 10px 24px;
+      font-size: .85rem; width: auto; height: auto;
+    }
+    .counter-history {
+      width: 100%; max-width: 360px;
+      text-align: center;
+    }
+    .counter-history p {
+      font-size: .8rem; color: var(--muted); margin-bottom: 8px;
+    }
+    #history-bar {
+      display: flex; gap: 5px;
+      justify-content: center; flex-wrap: wrap; min-height: 28px;
+    }
+    .history-pip {
+      width: 8px; height: 28px;
+      border-radius: 4px;
+      background: var(--surface2);
+      transition: background .2s;
+    }
+    .history-pip.pos { background: var(--accent); }
+    .history-pip.neg { background: var(--danger); }
+
+    /* ══════════════════════════════════════════
+       3. CHARACTER COUNTER INPUT
+    ══════════════════════════════════════════ */
+    .input-group {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .input-label {
+      font-size: .85rem; font-weight: 600;
+      color: var(--text);
+    }
+    .textarea-wrap { position: relative; }
+    #char-input {
+      width: 100%;
+      min-height: 130px;
+      padding: 16px;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: 12px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .93rem;
+      color: var(--text);
+      resize: vertical;
+      outline: none;
+      transition: border-color var(--t), background var(--t);
+    }
+    #char-input::placeholder { color: var(--muted); }
+    #char-input:focus {
+      border-color: var(--accent);
+      background: var(--surface);
+    }
+    .char-meta {
+      display: flex; align-items: center;
+      justify-content: space-between;
+    }
+    #char-count-display {
+      font-size: .82rem; font-weight: 600;
+      color: var(--muted);
+      transition: color var(--t);
+    }
+    #char-count-display.warn { color: var(--accent2); }
+    #char-count-display.danger { color: var(--danger); }
+    .progress-bar-wrap {
+      flex: 1; margin: 0 14px;
+      height: 5px; background: var(--surface2);
+      border-radius: 100px; overflow: hidden;
+    }
+    #char-progress {
+      height: 100%;
+      width: 0%;
+      background: var(--accent);
+      border-radius: 100px;
+      transition: width .15s ease, background .2s;
+    }
+    #char-progress.warn { background: var(--accent2); }
+    #char-progress.danger { background: var(--danger); }
+    #char-hint {
+      font-size: .8rem; color: var(--muted);
+      min-height: 20px;
+      transition: color var(--t);
+    }
+    #char-hint.warn { color: var(--accent2); }
+    #char-hint.danger { color: var(--danger); }
+    .word-stats {
+      display: flex; gap: 20px; flex-wrap: wrap;
+      margin-top: 4px;
+    }
+    .stat-chip {
+      display: flex; align-items: center; gap: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: .8rem; color: var(--muted);
+      transition: background var(--t), border-color var(--t);
+    }
+    .stat-chip strong { color: var(--text); font-weight: 600; }
+
+    /* ══════════════════════════════════════════
+       4. ACCORDION / FAQ
+    ══════════════════════════════════════════ */
+    .accordion { display: flex; flex-direction: column; gap: 10px; }
+    .acc-item {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: border-color var(--t), background var(--t);
+    }
+    .acc-item.is-open { border-color: var(--accent); }
+    .acc-trigger {
+      width: 100%;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      padding: 18px 22px;
+      background: transparent;
+      border: none; cursor: pointer;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .94rem; font-weight: 500;
+      color: var(--text);
+      text-align: left;
+      transition: color var(--t);
+    }
+    .acc-item.is-open .acc-trigger { color: var(--accent); }
+    .acc-icon {
+      width: 26px; height: 26px;
+      background: var(--border);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .8rem;
+      transition: transform var(--t), background var(--t);
+      flex-shrink: 0;
+    }
+    .acc-item.is-open .acc-icon {
+      transform: rotate(45deg);
+      background: var(--accent-bg);
+      color: var(--accent);
+    }
+    .acc-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height .38s cubic-bezier(.4,0,.2,1);
+    }
+    .acc-body-inner {
+      padding: 0 22px 20px;
+      font-size: .88rem; color: var(--muted);
+      line-height: 1.7;
+    }
+    .acc-body-inner code {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 2px 7px;
+      font-family: 'Courier New', monospace;
+      font-size: .83rem;
+      color: var(--accent);
+    }
+
+    /* ══════════════════════════════════════════
+       5. TODO LIST
+    ══════════════════════════════════════════ */
+    .todo-input-row {
+      display: flex; gap: 10px; margin-bottom: 20px;
+    }
+    #todo-input {
+      flex: 1;
+      padding: 12px 16px;
+      background: var(--surface2);
+      border: 2px solid var(--border);
+      border-radius: 10px;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .92rem; color: var(--text);
+      outline: none;
+      transition: border-color var(--t), background var(--t);
+    }
+    #todo-input::placeholder { color: var(--muted); }
+    #todo-input:focus { border-color: var(--accent); background: var(--surface); }
+    .todo-filters {
+      display: flex; gap: 6px; margin-bottom: 16px;
+    }
+    .filter-btn {
+      padding: 6px 14px;
+      border-radius: 8px;
+      border: 1.5px solid var(--border);
+      background: transparent;
+      font-family: 'DM Sans', sans-serif;
+      font-size: .8rem; font-weight: 500;
+      color: var(--muted);
+      cursor: pointer;
+      transition: all var(--t);
+    }
+    .filter-btn.is-active,
+    .filter-btn:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+    #todo-list {
+      display: flex; flex-direction: column; gap: 8px;
+      min-height: 60px;
+    }
+    .todo-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 14px 16px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      transition: all var(--t);
+      animation: slide-in .2s ease;
+    }
+    @keyframes slide-in {
+      from { opacity: 0; transform: translateY(-6px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .todo-item.is-done {
+      opacity: .55;
+      border-color: transparent;
+    }
+    .todo-checkbox {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 12px; color: transparent;
+      flex-shrink: 0;
+      transition: all var(--t);
+    }
+    .todo-item.is-done .todo-checkbox {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    .todo-text {
+      flex: 1;
+      font-size: .92rem;
+      transition: text-decoration var(--t), color var(--t);
+    }
+    .todo-item.is-done .todo-text {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+    .todo-delete {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      border: none; background: transparent;
+      color: var(--muted);
+      cursor: pointer; font-size: .9rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background var(--t), color var(--t);
+    }
+    .todo-delete:hover { background: var(--danger-bg); color: var(--danger); }
+    .todo-empty {
+      text-align: center;
+      padding: 32px 0;
+      color: var(--muted);
+      font-size: .88rem;
+    }
+    .todo-footer {
+      margin-top: 16px;
+      display: flex; align-items: center;
+      justify-content: space-between;
+      font-size: .8rem; color: var(--muted);
+    }
+    #clear-done {
+      font-size: .8rem; padding: 6px 14px;
+    }
+
+    /* ══════════════════════════════════════════
+       FOOTER
+    ══════════════════════════════════════════ */
+    footer {
+      text-align: center;
+      padding: 28px;
+      font-size: .78rem; color: var(--muted);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--accent); text-decoration: none; }
+
+    /* ══════════════════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════════════════ */
+    @media (max-width: 640px) {
+      header { padding: 0 18px; }
+      nav { display: none; }
+      main { padding: 32px 14px 80px; gap: 24px; }
+      .hero { padding: 32px 24px; }
+      .card { padding: 24px 20px; }
+      #counter-number { font-size: 4rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════════════════════
+       HEADER
+  ═══════════════════════════════════════ -->
+  <header>
+    <div class="logo">Decode<span>Labs</span></div>
+    <nav>
+      <a href="#dark-mode">Theme</a>
+      <a href="#counter">Counter</a>
+      <a href="#char-counter">Input</a>
+      <a href="#accordion">FAQ</a>
+      <a href="#todo">To-Do</a>
+    </nav>
+    <button class="theme-btn js-theme-toggle" id="header-toggle" aria-label="Toggle theme">
+      <div class="icon" id="header-icon">🌙</div>
+      <span id="theme-label">Dark Mode</span>
+    </button>
+  </header>
+
+  <!-- ═══════════════════════════════════════
+       MAIN
+  ═══════════════════════════════════════ -->
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="badge">⚡ Project 3 — Batch 2026</div>
+      <h1>Interactive <em>Web Elements</em></h1>
+      <p>Mastering JavaScript DOM manipulation through buttons, toggles, dynamic content, and live user interactions — the nervous system of the modern web.</p>
+      <div class="hero-meta">
+        <div class="meta-item">🎯 <strong>Goal:</strong>&nbsp;Add interactivity via JS</div>
+        <div class="meta-item">🛠 <strong>Skills:</strong>&nbsp;JavaScript, DOM Manipulation</div>
+        <div class="meta-item">🏛 <strong>Track:</strong>&nbsp;Frontend Development</div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────
+         1. DARK MODE TOGGLE
+    ───────────────────────────────────── -->
+    <section class="card" id="dark-mode">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="section-tag">01 — State Management</div>
+          <h2>Dark Mode Toggle</h2>
+          <p class="card-desc">Toggle the site theme between light and dark. State persists via <code style="font-family:monospace;font-size:.83em;background:var(--surface2);padding:2px 6px;border-radius:4px">localStorage</code>.</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="theme-demo">
+        <div class="theme-demo-left">
+          <p>Click the toggle to switch between <strong>Light</strong> and <strong>Dark</strong> mode. JavaScript listens for the click event, updates the <code style="font-family:monospace;font-size:.82em;background:var(--surface2);padding:1px 6px;border-radius:4px">data-theme</code> attribute on <code style="font-family:monospace;font-size:.82em;background:var(--surface2);padding:1px 6px;border-radius:4px">&lt;html&gt;</code>, and saves your preference.</p>
+          <div class="theme-status">
+            <div class="status-dot"></div>
+            Current theme: <strong id="current-theme-name">Light Mode</strong>
+          </div>
+        </div>
+        <div class="big-toggle" id="dark-mode-section">
+          <div class="toggle-labels">
+            <span>Theme</span>
+            <strong id="toggle-mode-label">Light</strong>
+          </div>
+          <div class="big-toggle-track js-theme-toggle" id="big-toggle" role="switch" aria-checked="false" tabindex="0">
+            <div class="big-toggle-thumb" id="big-thumb">☀️</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────
+         2. COUNTER
+    ───────────────────────────────────── -->
+    <section class="card" id="counter">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="section-tag">02 — Event Listeners + DOM Mutation</div>
+          <h2>Interactive Counter</h2>
+          <p class="card-desc">Increment, decrement, and reset a number. History is tracked visually.</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="counter-ui">
+        <div class="counter-display">
+          <div id="counter-number" class="zero">0</div>
+          <div class="counter-label">Current Value</div>
+        </div>
+        <div class="counter-controls">
+          <button class="btn btn-danger btn-icon" id="btn-dec" aria-label="Decrement">−</button>
+          <button class="btn btn-outline" id="btn-reset" aria-label="Reset">Reset</button>
+          <button class="btn btn-primary btn-icon" id="btn-inc" aria-label="Increment">+</button>
+        </div>
+        <div class="counter-history">
+          <p>Last 20 changes (green = +, red = −)</p>
+          <div id="history-bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────
+         3. CHARACTER COUNTER
+    ───────────────────────────────────── -->
+    <section class="card" id="char-counter">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="section-tag">03 — Input Events + Live DOM Update</div>
+          <h2>Live Character Counter</h2>
+          <p class="card-desc">Type into the textarea — character and word counts update in real-time using the <code style="font-family:monospace;font-size:.82em;background:var(--surface2);padding:1px 6px;border-radius:4px">input</code> event.</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="input-group">
+        <label class="input-label" for="char-input">Your message (max 280 characters)</label>
+        <div class="textarea-wrap">
+          <textarea id="char-input" maxlength="280" placeholder="Start typing your message here…"></textarea>
+        </div>
+        <div class="char-meta">
+          <span id="char-count-display">0 / 280</span>
+          <div class="progress-bar-wrap">
+            <div id="char-progress"></div>
+          </div>
+          <span id="char-hint">Keep going!</span>
+        </div>
+        <div class="word-stats">
+          <div class="stat-chip">Words: <strong id="word-count">0</strong></div>
+          <div class="stat-chip">Sentences: <strong id="sentence-count">0</strong></div>
+          <div class="stat-chip">Est. read time: <strong id="read-time">0s</strong></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────
+         4. ACCORDION
+    ───────────────────────────────────── -->
+    <section class="card" id="accordion">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="section-tag">04 — classList Toggle + Dynamic Height</div>
+          <h2>Accordion FAQ</h2>
+          <p class="card-desc">Click any question to reveal the answer. Only one panel opens at a time.</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+      <div class="accordion" id="faq-accordion">
+
+        <div class="acc-item">
+          <button class="acc-trigger js-acc-trigger">
+            What is the DOM and why does it matter?
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              The <strong>Document Object Model (DOM)</strong> is the browser's live, in-memory representation of your HTML page as a tree of objects (nodes). JavaScript can read and modify these nodes using APIs like <code>document.querySelector()</code>, making pages dynamic. Without the DOM, JavaScript would have no way to interact with your HTML structure.
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger js-acc-trigger">
+            What is an Event Listener?
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              An event listener "wires a nerve" to a DOM node. You call <code>element.addEventListener('click', myFunction)</code> to tell the browser: <em>"whenever this element is clicked, run myFunction."</em> This is the foundation of all user interactivity — clicks, keypresses, hovers, form submissions.
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger js-acc-trigger">
+            What is the IPO Loop in web development?
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              Every interactive element follows the <strong>Input → Process → Output</strong> pattern. <br/><br/>
+              • <strong>Input</strong>: A user action fires an event (e.g., a button click).<br/>
+              • <strong>Process</strong>: A JavaScript function evaluates state and runs logic.<br/>
+              • <strong>Output</strong>: The DOM is mutated to reflect a visible change.
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger js-acc-trigger">
+            Why use <code>const</code> instead of <code>var</code>?
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <code>var</code> is function-scoped and prone to hoisting bugs that pollute the global scope. Modern JavaScript uses <code>const</code> (for values that never reassign) and <code>let</code> (for counters/loops that do). This signals clear intent, prevents accidental reassignment, and is block-scoped — safer and more predictable.
+            </div>
+          </div>
+        </div>
+
+        <div class="acc-item">
+          <button class="acc-trigger js-acc-trigger">
+            What is the difference between Imperative and Declarative JS?
+            <span class="acc-icon">+</span>
+          </button>
+          <div class="acc-body">
+            <div class="acc-body-inner">
+              <strong>Imperative (Vanilla JS)</strong>: You write explicit, step-by-step instructions on how to find and update DOM nodes — you are telling the browser <em>how</em> to do something.<br/><br/>
+              <strong>Declarative (React/Vue)</strong>: You define <em>what</em> the UI should look like based on state, and the framework handles the DOM updates automatically. Vanilla JS is imperative; React is declarative.
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ─────────────────────────────────────
+         5. TODO LIST
+    ───────────────────────────────────── -->
+    <section class="card" id="todo">
+      <div class="card-header">
+        <div class="card-title-group">
+          <div class="section-tag">05 — Dynamic Node Creation + Filters</div>
+          <h2>Dynamic To-Do List</h2>
+          <p class="card-desc">Add tasks, mark them complete, filter by status, and delete them — all via DOM manipulation.</p>
+        </div>
+      </div>
+      <div class="divider"></div>
+
+      <div class="todo-input-row">
+        <input type="text" id="todo-input" placeholder="Add a new task and press Enter or click Add…" maxlength="120"/>
+        <button class="btn btn-primary" id="btn-add-todo">+ Add</button>
+      </div>
+
+      <div class="todo-filters">
+        <button class="filter-btn is-active js-filter" data-filter="all">All</button>
+        <button class="filter-btn js-filter" data-filter="active">Active</button>
+        <button class="filter-btn js-filter" data-filter="done">Done</button>
+      </div>
+
+      <div id="todo-list"></div>
+
+      <div class="todo-footer">
+        <span id="todo-stats">0 tasks</span>
+        <button class="btn btn-outline" id="clear-done">Clear Completed</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    Built for <strong>DecodeLabs</strong> · Frontend Development Project 3 · Batch 2026
+    &nbsp;|&nbsp; <a href="https://www.decodelabs.tech" target="_blank">decodelabs.tech</a>
+  </footer>
+
+  <!-- ═══════════════════════════════════════
+       JAVASCRIPT
+  ═══════════════════════════════════════ -->
+  <script>
+    /* ══════════════════════════════════════════
+       1. DARK MODE TOGGLE
+    ══════════════════════════════════════════ */
+    const html = document.documentElement;
+    const themeLabel = document.getElementById('theme-label');
+    const headerIcon = document.getElementById('header-icon');
+    const currentThemeName = document.getElementById('current-theme-name');
+    const toggleModeLabel = document.getElementById('toggle-mode-label');
+    const bigThumb = document.getElementById('big-thumb');
+
+    // Load saved theme from localStorage
+    const savedTheme = localStorage.getItem('dl-theme') || 'light';
+    applyTheme(savedTheme);
+
+    function applyTheme(theme) {
+      html.setAttribute('data-theme', theme);
+      localStorage.setItem('dl-theme', theme);
+
+      const isDark = theme === 'dark';
+      themeLabel.textContent = isDark ? 'Light Mode' : 'Dark Mode';
+      headerIcon.textContent = isDark ? '☀️' : '🌙';
+      currentThemeName.textContent = isDark ? 'Dark Mode' : 'Light Mode';
+      toggleModeLabel.textContent = isDark ? 'Dark' : 'Light';
+      bigThumb.textContent = isDark ? '🌙' : '☀️';
+    }
+
+    function toggleTheme() {
+      const current = html.getAttribute('data-theme');
+      applyTheme(current === 'dark' ? 'light' : 'dark');
+    }
+
+    // Attach listeners to ALL toggle elements
+    document.querySelectorAll('.js-theme-toggle').forEach(el => {
+      el.addEventListener('click', toggleTheme);
+    });
+
+    // Keyboard support for big toggle
+    document.getElementById('big-toggle').addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleTheme(); }
+    });
+
+
+    /* ══════════════════════════════════════════
+       2. COUNTER
+    ══════════════════════════════════════════ */
+    let count = 0;
+    const history = [];
+    const MAX_HISTORY = 20;
+
+    const counterEl = document.getElementById('counter-number');
+    const historyBar = document.getElementById('history-bar');
+
+    function updateCounter() {
+      counterEl.textContent = count;
+      counterEl.classList.remove('negative', 'zero', 'bump');
+      // Force reflow to restart animation
+      void counterEl.offsetWidth;
+      counterEl.classList.add('bump');
+
+      if (count < 0) counterEl.classList.add('negative');
+      else if (count === 0) counterEl.classList.add('zero');
+
+      // Render history bar
+      historyBar.innerHTML = '';
+      history.forEach(h => {
+        const pip = document.createElement('div');
+        pip.className = 'history-pip ' + (h > 0 ? 'pos' : 'neg');
+        historyBar.appendChild(pip);
+      });
+    }
+
+    function addHistory(delta) {
+      if (history.length >= MAX_HISTORY) history.shift();
+      history.push(delta);
+    }
+
+    document.getElementById('btn-inc').addEventListener('click', () => {
+      count++;
+      addHistory(1);
+      updateCounter();
+    });
+
+    document.getElementById('btn-dec').addEventListener('click', () => {
+      count--;
+      addHistory(-1);
+      updateCounter();
+    });
+
+    document.getElementById('btn-reset').addEventListener('click', () => {
+      count = 0;
+      history.length = 0;
+      updateCounter();
+    });
+
+    updateCounter(); // Initial render
+
+
+    /* ══════════════════════════════════════════
+       3. CHARACTER COUNTER
+    ══════════════════════════════════════════ */
+    const charInput    = document.getElementById('char-input');
+    const charDisplay  = document.getElementById('char-count-display');
+    const charProgress = document.getElementById('char-progress');
+    const charHint     = document.getElementById('char-hint');
+    const wordCount    = document.getElementById('word-count');
+    const sentenceCount = document.getElementById('sentence-count');
+    const readTime     = document.getElementById('read-time');
+    const MAX_CHARS = 280;
+
+    charInput.addEventListener('input', () => {
+      const text = charInput.value;
+      const len  = text.length;
+      const pct  = (len / MAX_CHARS) * 100;
+
+      // Update count display
+      charDisplay.textContent = `${len} / ${MAX_CHARS}`;
+
+      // Progress bar
+      charProgress.style.width = pct + '%';
+
+      // Color states
+      const isWarn   = pct >= 70 && pct < 90;
+      const isDanger = pct >= 90;
+
+      [charDisplay, charProgress, charHint].forEach(el => {
+        el.classList.toggle('warn', isWarn);
+        el.classList.toggle('danger', isDanger);
+      });
+
+      // Hint messages
+      const remaining = MAX_CHARS - len;
+      if (len === 0)         charHint.textContent = 'Keep going!';
+      else if (isDanger)     charHint.textContent = `⚠ Only ${remaining} left!`;
+      else if (isWarn)       charHint.textContent = `${remaining} characters remaining`;
+      else                   charHint.textContent = `${remaining} characters remaining`;
+
+      // Word & sentence count
+      const words = text.trim() === '' ? 0 : text.trim().split(/\s+/).length;
+      const sentences = text.trim() === '' ? 0 : (text.match(/[.!?]+/g) || []).length;
+      const readSecs = Math.ceil(words / 3.5);
+
+      wordCount.textContent = words;
+      sentenceCount.textContent = sentences;
+      readTime.textContent = readSecs < 60 ? readSecs + 's' : Math.ceil(readSecs/60) + 'm';
+    });
+
+
+    /* ══════════════════════════════════════════
+       4. ACCORDION
+    ══════════════════════════════════════════ */
+    const accItems = document.querySelectorAll('.acc-item');
+
+    accItems.forEach(item => {
+      const trigger = item.querySelector('.js-acc-trigger');
+      const body    = item.querySelector('.acc-body');
+
+      trigger.addEventListener('click', () => {
+        const isOpen = item.classList.contains('is-open');
+
+        // Close all items
+        accItems.forEach(i => {
+          i.classList.remove('is-open');
+          i.querySelector('.acc-body').style.maxHeight = '0';
+        });
+
+        // Open clicked item (if it was closed)
+        if (!isOpen) {
+          item.classList.add('is-open');
+          body.style.maxHeight = body.scrollHeight + 'px';
+        }
+      });
+    });
+
+
+    /* ══════════════════════════════════════════
+       5. TO-DO LIST
+    ══════════════════════════════════════════ */
+    let todos = [];
+    let currentFilter = 'all';
+    let nextId = 1;
+
+    const todoInput  = document.getElementById('todo-input');
+    const todoList   = document.getElementById('todo-list');
+    const todoStats  = document.getElementById('todo-stats');
+    const clearDone  = document.getElementById('clear-done');
+    const filterBtns = document.querySelectorAll('.js-filter');
+
+    function addTodo() {
+      const text = todoInput.value.trim();
+      if (!text) return;
+
+      todos.push({ id: nextId++, text, done: false });
+      todoInput.value = '';
+      renderTodos();
+    }
+
+    function deleteTodo(id) {
+      todos = todos.filter(t => t.id !== id);
+      renderTodos();
+    }
+
+    function toggleTodo(id) {
+      const todo = todos.find(t => t.id === id);
+      if (todo) todo.done = !todo.done;
+      renderTodos();
+    }
+
+    function renderTodos() {
+      // Filter
+      let visible = todos;
+      if (currentFilter === 'active') visible = todos.filter(t => !t.done);
+      if (currentFilter === 'done')   visible = todos.filter(t => t.done);
+
+      todoList.innerHTML = '';
+
+      if (visible.length === 0) {
+        const empty = document.createElement('div');
+        empty.className = 'todo-empty';
+        empty.textContent = currentFilter === 'done'
+          ? '🎉 No completed tasks yet.'
+          : currentFilter === 'active'
+          ? '✅ No active tasks!'
+          : '📝 Add your first task above.';
+        todoList.appendChild(empty);
+      } else {
+        visible.forEach(todo => {
+          // Create item elements
+          const item = document.createElement('div');
+          item.className = 'todo-item' + (todo.done ? ' is-done' : '');
+
+          const checkbox = document.createElement('div');
+          checkbox.className = 'todo-checkbox';
+          checkbox.textContent = todo.done ? '✓' : '';
+          checkbox.addEventListener('click', () => toggleTodo(todo.id));
+
+          const textEl = document.createElement('span');
+          textEl.className = 'todo-text';
+          textEl.textContent = todo.text;
+          textEl.addEventListener('click', () => toggleTodo(todo.id));
+
+          const delBtn = document.createElement('button');
+          delBtn.className = 'todo-delete';
+          delBtn.textContent = '✕';
+          delBtn.setAttribute('aria-label', 'Delete task');
+          delBtn.addEventListener('click', () => deleteTodo(todo.id));
+
+          item.appendChild(checkbox);
+          item.appendChild(textEl);
+          item.appendChild(delBtn);
+          todoList.appendChild(item);
+        });
+      }
+
+      // Update stats
+      const total  = todos.length;
+      const done   = todos.filter(t => t.done).length;
+      const active = total - done;
+      todoStats.textContent = `${total} task${total !== 1 ? 's' : ''} · ${active} active · ${done} done`;
+    }
+
+    // Event listeners for todo
+    document.getElementById('btn-add-todo').addEventListener('click', addTodo);
+
+    todoInput.addEventListener('keydown', e => {
+      if (e.key === 'Enter') addTodo();
+    });
+
+    clearDone.addEventListener('click', () => {
+      todos = todos.filter(t => !t.done);
+      renderTodos();
+    });
+
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        filterBtns.forEach(b => b.classList.remove('is-active'));
+        btn.classList.add('is-active');
+        currentFilter = btn.dataset.filter;
+        renderTodos();
+      });
+    });
+
+    // Seed a couple of example todos
+    todos = [
+      { id: nextId++, text: 'Read the DecodeLabs Project 3 brief', done: true },
+      { id: nextId++, text: 'Understand the IPO loop concept', done: false },
+      { id: nextId++, text: 'Implement all 5 interactive elements', done: false },
+    ];
+    renderTodos();
+
+  </script>
+</body>
+</html>
